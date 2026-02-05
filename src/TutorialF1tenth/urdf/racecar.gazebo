@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<robot name="racecar" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- Gazebo references -->
+
+<gazebo reference="chassis">
+  <mu1 value="0.0"/>
+  <mu2 value="0.0"/>
+  <kp  value="10000000.0" />
+  <kd  value="1.0" />
+  <material>Gazebo/Red</material>
+</gazebo>
+
+<gazebo reference="left_rear_wheel">
+  <mu1 value="1.0"/>
+  <mu2 value="1.0"/>
+  <kp  value="10000000.0" />
+  <kd  value="1.0" />
+  <fdir1 value="1 0 0"/>
+  <material>Gazebo/Black</material>
+</gazebo>
+
+<gazebo reference="right_rear_wheel">
+  <mu1 value="1.0"/>
+  <mu2 value="1.0"/>
+  <kp  value="10000000.0" />
+  <kd  value="1.0" />
+  <fdir1 value="1 0 0"/>
+  <material>Gazebo/Black</material>
+</gazebo>
+
+<gazebo reference="left_front_wheel">
+  <mu1 value="1.0"/>
+  <mu2 value="1.0"/>
+  <kp  value="10000000.0" />
+  <kd  value="1.0" />
+  <fdir1 value="0 0 1"/>
+  <material>Gazebo/Black</material>
+</gazebo>
+
+<gazebo reference="right_front_wheel">
+  <mu1 value="1.0"/>
+  <mu2 value="1.0"/>
+  <kp  value="10000000.0" />
+  <kd  value="1.0" />
+  <fdir1 value="0 0 1"/>
+  <material>Gazebo/Black</material>
+</gazebo>
+
+<!-- Gazebo plugins -->
+
+<ros2_control name="IgnitionSystem" type="system">
+  <hardware>
+    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+  </hardware>
+  
+  <joint name="left_steering_hinge_joint">
+    <command_interface name="position">
+      <param name="min">-0.523</param>
+      <param name="max">0.523</param>
+    </command_interface>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+  </joint>
+
+  <joint name="right_steering_hinge_joint">
+    <command_interface name="position">
+      <param name="min">-0.523</param>
+      <param name="max">0.523</param>
+    </command_interface>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+  </joint>
+
+  <joint name="left_rear_wheel_joint">
+    <command_interface name="velocity"/>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+  </joint>
+  
+  <joint name="right_rear_wheel_joint">
+    <command_interface name="velocity"/>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+  </joint>
+  
+</ros2_control>
+
+<gazebo>
+  <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+    <parameters>$(find TutorialF1tenth)/config/f1tenth_controllers.yaml</parameters>
+  </plugin>
+
+  <plugin
+    filename="ignition-gazebo-sensors-system"
+    name="ignition::gazebo::systems::Sensors">
+    <render_engine>ogre2</render_engine>
+  </plugin>
+</gazebo>
+
+
+
+<!-- Odometry (cheap hack) -->
+<plugin
+    filename="ignition-gazebo-odometry-publisher-system"
+    name="ignition::gazebo::systems::OdometryPublisher">
+    <odom_frame>odom</odom_frame>
+    <robot_base_frame>chassis</robot_base_frame>
+    <odom_publish_frequency>50</odom_publish_frequency>
+    <tf_topic></tf_topic> 
+</plugin>
+
+  <!-- hokuyo -->
+
+  <gazebo reference="laser">
+    <sensor type="gpu_lidar" name="hokuyo_sensor"> 
+      <pose>0 0 0.08 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      
+      <topic>scan</topic> 
+      
+      <gz_frame_id>laser</gz_frame_id>
+
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>1081</samples>
+            <resolution>1</resolution>
+            <min_angle>-2.3561944902</min_angle>
+            <max_angle>2.3561944902</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.1</min>
+          <max>10.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </lidar>
+    </sensor>
+    
+  </gazebo>
+
+<!-- zed camera -->
+<xacro:unless value="$(optenv DISABLE_GAZEBO_CAMERA false)">
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="zed_camera_left_sensor">
+      <update_rate>30.0</update_rate>
+      <visualize>true</visualize>
+      <topic>camera/image_raw</topic>
+      <gz_frame_id>camera_link</gz_frame_id>
+      <camera name="zed_camera_left_camera">
+        <horizontal_fov>0.8709216071359963</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format> </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+      </camera>
+    </sensor>
+  </gazebo>
+</xacro:unless>
+
+
+</robot>
