@@ -14,3 +14,4 @@ Hal - hal yang harus di lakukan:
       ros-humble-ros-gz-bridge \
       ros-humble-ros-gz-interfaces
 5. bisa di coba ros2 launch Tutotialf1tenth gazebo.launch.py
+(note: jika di wsl jalankna command export "LIBGL_ALWAYS_SOFTWARE=1" terlebih dahulu)
