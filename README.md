@@ -16,7 +16,7 @@ Hal - hal yang harus di lakukan:
    
 6. bisa di coba ros2 launch Tutotialf1tenth gazebo.launch.py
 
-(note: jika di wsl jalankna command
+(note: jika di wsl jalankan command
 ```bash
 export LIBGL_ALWAYS_SOFTWARE=1
 ```
